@@ -11,5 +11,4 @@ export interface BLEState {
   transport: string;
   revision: number;
 }
-export type BluetoothProvider = Pick<Bluetooth, "requestDevice"> &
-  Partial<Pick<Bluetooth, "getDevices">>;
+export type { BLETransport as BluetoothProvider } from "./transport";

@@ -11,13 +11,15 @@ export default defineConfig({
     }] : []),
   ],
   use: {
-    baseURL: "http://127.0.0.1:4173/wrx-ble-controller/",
+    baseURL: "http://127.0.0.1:4173/",
     viewport: { width: 390, height: 844 },
     acceptDownloads: true,
   },
   webServer: {
-    command: "npm run dev -- --port 4173 --strictPort",
-    url: "http://127.0.0.1:4173/wrx-ble-controller/",
+    command: process.env.WRX_TEST_PRODUCTION === "1"
+      ? "npm run preview -- --port 4173 --strictPort"
+      : "npm run dev -- --port 4173 --strictPort",
+    url: "http://127.0.0.1:4173/",
     reuseExistingServer: !process.env.CI,
   },
 });

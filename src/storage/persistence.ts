@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 export const keys = {
   studio: "wrx-dream-studio-v7",
   oldStudio: "wrx-dream-studio-v6",
@@ -67,6 +68,11 @@ export function download(
   content: string,
   type = "application/json",
 ) {
+  if (Capacitor.isNativePlatform()) {
+    void import('./nativeExport').then(({ shareExport }) => shareExport(filename, content))
+      .catch(error => window.alert('Export could not be shared: ' + String(error)));
+    return;
+  }
   const url = URL.createObjectURL(new Blob([content], { type }));
   const a = document.createElement("a");
   a.href = url;

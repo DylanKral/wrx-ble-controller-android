@@ -26,8 +26,8 @@ body {
 main {
   max-width: 610px;
   margin: auto;
-  padding: calc(22px + env(safe-area-inset-top)) 17px
-    calc(30px + env(safe-area-inset-bottom));
+  padding: calc(22px + var(--safe-area-inset-top, env(safe-area-inset-top, 0px))) 17px
+    calc(30px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
 }
 h1 {
   font-size: 27px;
@@ -296,8 +296,8 @@ label {
 #calibration-view {
   max-width: 760px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 18px) 16px
-    calc(env(safe-area-inset-bottom) + 32px);
+  padding: calc(var(--safe-area-inset-top, env(safe-area-inset-top, 0px)) + 18px) 16px
+    calc(var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) + 32px);
 }
 #calibration-view a {
   color: #9ccfff;
@@ -837,7 +837,7 @@ label {
 
 /* v6: Main dashboard and sequence studio */
 body {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
 }
 #home-view {
   max-width: 610px;
@@ -940,9 +940,9 @@ body {
   z-index: 18;
   background: linear-gradient(180deg, #102137f8, #0b1424);
   border-top: 1px solid #46627f;
-  padding: 10px max(14px, env(safe-area-inset-right))
-    calc(10px + env(safe-area-inset-bottom))
-    max(14px, env(safe-area-inset-left));
+  padding: 10px max(14px, var(--safe-area-inset-right, env(safe-area-inset-right, 0px)))
+    calc(10px + var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)))
+    max(14px, var(--safe-area-inset-left, env(safe-area-inset-left, 0px)));
   display: flex;
   align-items: center;
   gap: 12px;

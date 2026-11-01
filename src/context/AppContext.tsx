@@ -1,3 +1,5 @@
+import { App as NativeApp } from "@capacitor/app";
+import { Capacitor } from "@capacitor/core";
 import {
   createContext,
   useContext,
@@ -350,31 +352,41 @@ function useApplication() {
   }, [output, manager.state.revision]);
   useEffect(() => {
     const off = manager.onDisconnect((side) => {
-      if (output.mode === "hardware")
-        scheduler.stop("Bluetooth " + side + " disconnected.");
+      if (output.mode !== "simulation") {
+        output.cancelPending();
+        scheduler.stop("Bluetooth " + side + " disconnected. Restart playback explicitly after reconnecting.");
+        simulator.pause();
+      }
       calibration.abort("Bluetooth " + side + " disconnected during test.");
     });
     let wasHidden = document.hidden;
-    const visibility = () => {
-      if (document.hidden) {
+    const activeChanged = (active: boolean) => {
+      if (!active) {
         wasHidden = true;
         output.cancelPending();
         simulator.pause();
         scheduler.stop(
-          "Browser hidden; timer stopped. Last factory effect may continue internally.",
+          "App hidden; timer stopped. Last factory effect may continue internally.",
         );
         calibration.abort(
-          "Page hidden; test stopped to avoid inaccurate timing.",
+          "App hidden; test stopped to avoid inaccurate timing.",
         );
       } else if (wasHidden) {
         wasHidden = false;
-        notify("Browser active. Playback remains stopped; select a preset to play.");
+        notify("App active. Playback remains stopped; select a preset to play.");
+        void manager.reconnect("left");
+        void manager.reconnect("right");
       }
     };
+    const visibility = () => activeChanged(!document.hidden);
+    const nativeListener = Capacitor.isNativePlatform()
+      ? NativeApp.addListener('appStateChange', ({ isActive }) => activeChanged(isActive))
+      : undefined;
     document.addEventListener("visibilitychange", visibility);
     window.addEventListener("pageshow", visibility);
     return () => {
       off();
+      void nativeListener?.then(handle => handle.remove());
       document.removeEventListener("visibilitychange", visibility);
       window.removeEventListener("pageshow", visibility);
       scheduler.stop();

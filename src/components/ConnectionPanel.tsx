@@ -8,12 +8,12 @@ export function ConnectionPanel({
   compact?: boolean;
   disabled?: boolean;
 }) {
-  const { manager, connected, pending, supported } = useBluetooth();
+  const { manager, connected, pending, supported, native } = useBluetooth();
   const { autoRestore, setAutoRestore } = useApp();
   const body = (
     <>
       <span className="pill">
-        {supported ? "Web Bluetooth available" : "Requires BLE browser / HTTPS"}
+        {native ? "Native Android Bluetooth" : supported ? "Web Bluetooth available" : "Requires BLE browser / HTTPS"}
       </span>
       {sides.map((side) => (
         <div className="device" key={side}>
@@ -47,7 +47,7 @@ export function ConnectionPanel({
       ))}
       <p>
         Bluetooth writes are dispatched to both devices as closely together as
-        the browser permits. Connections are shared across all views.
+        the Bluetooth transport permits. Connections are shared across all views.
       </p>
     </>
   );

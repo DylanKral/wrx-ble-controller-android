@@ -6,3 +6,9 @@ playwright-report/
 validation-notes.local.md
 
 .vite/
+
+.gradle/
+.tools/
+*.jks
+*.keystore
+keystore.properties

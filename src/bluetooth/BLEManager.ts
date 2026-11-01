@@ -1,3 +1,4 @@
+import type { BLEDevice, BLECharacteristic } from "./transport";
 import {
   NOTIFICATION_SERVICE,
   WRITE_CHARACTERISTIC,
@@ -20,14 +21,14 @@ export class BLEManager {
   private connections: Partial<
     Record<
       Side,
-      { device: BluetoothDevice; char: BluetoothRemoteGATTCharacteristic }
+      { device: BLEDevice; char: BLECharacteristic }
     >
   > = {};
-  private remembered: Partial<Record<Side, BluetoothDevice>> = {};
+  private remembered: Partial<Record<Side, BLEDevice>> = {};
   private manualOff = { left: false, right: false };
   private listeners = new Set<() => void>();
   private disconnectListeners = new Set<(side: Side) => void>();
-  private attached = new WeakSet<BluetoothDevice>();
+  private attached = new WeakSet<BLEDevice>();
   private reconnectTimers = new Map<Side, ReturnType<typeof setTimeout>>();
   private writing = new Set<Side>();
   private idleWaiters = new Map<Side, Set<() => void>>();
@@ -90,7 +91,7 @@ export class BLEManager {
     this.restoreEnabled = enabled;
     if (!enabled) sides.forEach((s) => this.cancelRetry(s));
   }
-  async linkDevice(side: Side, device: BluetoothDevice): Promise<boolean> {
+  async linkDevice(side: Side, device: BLEDevice): Promise<boolean> {
     if (this.state.pending[side]) return false;
     if (this.isUp(side)) return true;
     if (device.name !== names[side]) {
@@ -198,7 +199,7 @@ export class BLEManager {
     const bt = this.provider();
     if (!bt) {
       this.report(
-        "Bluetooth unavailable; Android Chrome or iPhone Bluefy required over HTTPS.",
+        "Bluetooth unavailable. Use the Android app or a supported secure browser preview.",
       );
       return;
     }

@@ -1,5 +1,6 @@
+import type { BLECharacteristic } from "./transport";
 export async function writeCharacteristic(
-  ch: BluetoothRemoteGATTCharacteristic,
+  ch: BLECharacteristic,
   bytes: Uint8Array<ArrayBuffer>,
 ): Promise<string> {
   if (

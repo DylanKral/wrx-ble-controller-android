@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WRX RGB Controller</string>
+    <string name="title_activity_main">WRX RGB Controller</string>
+    <string name="package_name">com.dylankral.wrxblecontroller</string>
+    <string name="custom_url_scheme">com.dylankral.wrxblecontroller</string>
+</resources>

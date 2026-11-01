@@ -1,3 +1,6 @@
+import { getBrowserStorage } from "../storage/persistence";
+import { Capacitor } from "@capacitor/core";
+import { NativeBLETransport } from "../bluetooth/NativeBLETransport";
 import {
   createContext,
   useContext,
@@ -8,7 +11,12 @@ import {
 import { BLEManager } from "../bluetooth/BLEManager";
 const BluetoothContext = createContext<BLEManager | null>(null);
 export function BluetoothProvider({ children }: { children: ReactNode }) {
-  const [manager] = useState(() => new BLEManager());
+  const [manager] = useState(() => {
+    if (!Capacitor.isNativePlatform()) return new BLEManager();
+    const native = new NativeBLETransport(undefined, getBrowserStorage().storage, message => manager.report(message));
+    const manager = new BLEManager(() => native);
+    return manager;
+  });
   return (
     <BluetoothContext.Provider value={manager}>
       {children}
@@ -22,6 +30,7 @@ export function useBluetooth() {
   return {
     manager,
     ...state,
-    supported: !!navigator.bluetooth && window.isSecureContext,
+    supported: Capacitor.isNativePlatform() || (!!navigator.bluetooth && window.isSecureContext),
+    native: Capacitor.isNativePlatform(),
   };
 }
