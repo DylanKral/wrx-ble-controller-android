@@ -39,9 +39,9 @@ for (const width of [320, 375, 390, 430, 768])
     await expect(page.getByLabel("Static RGB color", { exact: true })).toHaveValue("#800000");
     await chooseSolidColor(page, "#123456");
     expect(await page.evaluate(() => window.__ble.writes.length)).toBe(before);
-    await page.getByLabel("Playback output", { exact: true }).selectOption("simulation");
+
     await panel.getByRole("button", { name: "Apply color", exact: true }).click();
-    expect(await page.evaluate(() => window.__ble.writes.length)).toBe(before);
+    await expect.poll(() => page.evaluate(() => window.__ble.writes.length)).toBe(before + 2);
     await expect(page.locator(".sim-art .led").first()).toHaveAttribute("fill", "#123456");
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     for (const button of await palette.getByRole("button").all()) {
@@ -52,5 +52,5 @@ for (const width of [320, 375, 390, 430, 768])
     await panel.screenshot({ path: info.outputPath(`solid-color-wheel-${width}.png`) });
     await page.reload();
     await expect(page.getByLabel("Static RGB color", { exact: true })).toHaveValue("#123456");
-    await expect(page.getByLabel("Playback output", { exact: true })).toHaveValue("simulation");
+    await expect(page.getByLabel("Playback output", { exact: true })).toHaveCount(0);
   });

@@ -44,13 +44,13 @@ test("Main speed saves automatically, exposes nine stops and no confirmation or 
   await expect(automatic).not.toBeChecked();
 });
 
-for (const output of ["simulation", "hardware", "combined"])
+for (const output of ["combined"])
   for (const preset of ["basic", "custom"])
     test(`${output}: automatic ${preset} speed coalesces, rebases cut timing and cancels on Stop + Red`, async ({ page }) => {
       await mockBluetooth(page, true);
       await page.goto("./");
       await expect(page.locator(".connection-action .dot.on")).toHaveCount(2);
-      await page.getByLabel("Playback output", { exact: true }).selectOption(output);
+
       await page.clock.install();
       await page.clock.pauseAt(new Date(Date.now() + 1000));
       await page.getByRole("tab", { name: preset === "basic" ? "Basic" : "Custom", exact: true }).click();

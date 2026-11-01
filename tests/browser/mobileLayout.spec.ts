@@ -59,7 +59,7 @@ for (const width of [320, 375, 390, 430, 768])
   test(`compact preview sticks below navigation at ${width}px without restarting animation`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("./");
-    await page.getByLabel("Playback output", { exact: true }).selectOption("simulation");
+
     await page.getByRole("tab", { name: "Basic", exact: true }).click();
     await page.locator('[data-profile-id="basic-5"]').click();
     const preview = page.locator(".sim-compact"), art = preview.locator("svg");

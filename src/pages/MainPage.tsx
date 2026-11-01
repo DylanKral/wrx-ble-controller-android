@@ -3,11 +3,15 @@ import { ConnectionPanel } from "../components/ConnectionPanel";
 import { ColorPicker } from "../components/ColorPicker";
 import { PresetButton } from "../components/PresetButton";
 import { useApp } from "../context/AppContext";
-import { SimulatorPanel, OutputSelector } from "../components/SimulatorPanel";
+import { SimulatorPanel } from "../components/SimulatorPanel";
+import { useLayoutEffect } from "react";
 import { NativeSpeedControls } from "../components/NativeSpeedControls";
 
 export function MainPage({ hidden }: { hidden: boolean }) {
   const app = useApp();
+  useLayoutEffect(() => {
+    if (!hidden && app.outputMode !== "combined") app.setOutputMode("combined");
+  }, [hidden, app.outputMode, app.setOutputMode]);
   return (
     <main id="home-view" hidden={hidden}>
       <div className="home-header"><h1>Lighting presets</h1></div>
@@ -54,8 +58,7 @@ export function MainPage({ hidden }: { hidden: boolean }) {
           <button type="button" onClick={() => void app.applyColor(app.staticColor)}>Apply color</button>
         </div>
       </section>
-      <section className="panel home-settings" aria-label="Output settings">
-        {!hidden && <OutputSelector />}
+      <section className="panel home-settings" aria-label="Connection diagnostics">
         <details className="connection-diagnostics">
           <summary>Connection status</summary>
           <p aria-label="Playback delivery">{app.output.statusText()}</p>

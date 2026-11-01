@@ -37,7 +37,7 @@ test("mobile Main retains the fixed preset grid, Basic modes, tabs, colors, and 
   page.on("pageerror", (e) => errors.push(e.message));
   await mockBluetooth(page);
   await page.goto("./");
-  await expect(page.getByLabel("Playback output", { exact: true })).toHaveValue("combined");
+  await expect(page.getByLabel("Playback output", { exact: true })).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Lighting presets" }),
   ).toBeVisible();
@@ -140,7 +140,7 @@ test("authorized-device restore, internally looping mode, disconnect and automat
 }) => {
   await mockBluetooth(page, true);
   await page.goto("./");
-  await page.getByLabel("Playback output", { exact: true }).selectOption("hardware");
+
   await expect(page.locator("#home-view .connection-action .dot.on")).toHaveCount(2);
   await page.getByRole("tab", { name: "Basic", exact: true }).click();
   await page.locator('[data-profile-id="basic-5"]').click();
@@ -314,18 +314,18 @@ test("unsupported Bluetooth is reported without claiming success", async ({
   await expect(page.getByRole("status")).toContainText("Bluetooth unavailable");
 });
 
-test("BLE failure stops playback and reports the failed controller", async ({
+test("Combined playback reports BLE failures without claiming hardware delivery", async ({
   page,
 }) => {
   await mockBluetooth(page, true);
   await page.goto("./");
-  await page.getByLabel("Playback output", { exact: true }).selectOption("hardware");
+
   await expect(page.locator("#home-view .connection-action .dot.on")).toHaveCount(2);
   await page.evaluate(() => (window.__ble.fail = true));
   await page.locator('[data-profile-id="overlap-cut"]').click();
-  await expect(page.locator(".global-playbar")).toContainText("Ready");
+  await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", /[0-9]+/);
   await page.getByText("Connection status", { exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("failed");
+  await expect(page.getByLabel("Playback delivery", { exact: true })).toContainText("error");
   expect(await page.evaluate(() => window.__ble.writes.length)).toBe(0);
 });
 

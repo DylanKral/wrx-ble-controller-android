@@ -11,7 +11,7 @@ The browser project at `C:\Users\Dylank\Desktop\WRX Tail lights` is separate and
 - Android Studio project: `android/`. Minimum Android API 24; compile/target API 36.
 - Vite builds relative asset paths into `dist/`; Capacitor copies these to Android assets. No remote server URL, GitHub Pages, or runtime internet dependency.
 - Existing React/TypeScript design, calibrated SVG simulator, factory modes, Custom presets, editor, timing/speed controls, and preferences are retained.
-- Simulation Only, Hardware Only, and Combined are retained. Native BLE is selected automatically in Android; desktop browser preview uses Web Bluetooth.
+- Main presets always use Combined playback (preview plus connected lights). Custom Testing and Calibration retain their output selector. Native BLE is selected automatically in Android; desktop browser preview uses Web Bluetooth.
 - Android system bar CSS insets keep navigation, sticky simulator and Stop + Red clear of the system UI. Existing touch and narrow-screen layout is retained.
 - Profile/configuration and calibration exports use Android's share sheet with cache files, without storage permissions. Import uses the existing file chooser.
 

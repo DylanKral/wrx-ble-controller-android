@@ -133,28 +133,11 @@ test("all eight tracks render all 38 LED regions and numbered indicators consist
   expect(errors).toEqual([]);
 });
 
-test("Simulation Only never sends Bluetooth for presets, static RGB, favorites, playlists, inspection or Stop", async ({
-  page,
-}) => {
+test("Simulation Only in Custom Testing never sends Bluetooth for favorites, playlists, inspection or Stop", async ({ page }) => {
   await mockBluetooth(page, true);
-  await page.goto("./");
+  await page.goto("./#development");
   await expect(page.locator("#home-view .connection-action .dot.on")).toHaveCount(2);
-  await page
-    .getByLabel("Playback output", { exact: true })
-    .selectOption("simulation");
-  await chooseSolidColor(page, "#00ff48");
-  await page
-    .getByRole("button", { name: "Apply color", exact: true })
-    .filter({ visible: true })
-    .click();
-  await page.getByRole("tab", { name: "Basic", exact: true }).click();
-  await page.locator('[data-profile-id="basic-4"]').click();
-  await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", "4");
-  await page.getByRole("button", { name: "Stop + Red", exact: true }).click();
-  await page.getByRole("tab", { name: "Custom", exact: true }).click();
-  await page.locator('[data-profile-id="overlap-cut"]').click();
-  await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", "8");
-  await navigate(page, "Custom Testing");
+  await page.getByLabel("Playback output", { exact: true }).selectOption("simulation");
   await page
     .getByRole("button", { name: "Play selected once", exact: true })
     .click();
@@ -187,9 +170,7 @@ test("Combined previews and writes unchanged commands, while Hardware Only does 
   await mockBluetooth(page, true);
   await page.goto("./");
   await expect(page.locator("#home-view .connection-action .dot.on")).toHaveCount(2);
-  await page
-    .getByLabel("Playback output", { exact: true })
-    .selectOption("combined");
+
   await page.getByRole("tab", { name: "Basic", exact: true }).click();
   await page.locator('[data-profile-id="basic-4"]').click();
   await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", "4");
@@ -210,6 +191,7 @@ test("Combined previews and writes unchanged commands, while Hardware Only does 
       ),
     )
     .toBe(2);
+  await navigate(page, "Custom Testing");
   await page
     .getByLabel("Playback output", { exact: true })
     .selectOption("hardware");
@@ -226,9 +208,6 @@ test("preview state and remembered RGB survive navigation and settings survive r
     }),
   );
   await page.goto("./");
-  await page
-    .getByLabel("Playback output", { exact: true })
-    .selectOption("simulation");
   await chooseSolidColor(page, "#00ff48");
   await page.getByRole("tab", { name: "Basic", exact: true }).click();
   await page.locator('[data-profile-id="basic-10"]').click();
@@ -240,6 +219,7 @@ test("preview state and remembered RGB survive navigation and settings survive r
   await expect(
     page.getByLabel("Preview RGB color", { exact: true }),
   ).toHaveValue("#00ff48");
+  await page.getByLabel("Playback output", { exact: true }).selectOption("simulation");
   await page.reload();
   await expect(page.getByLabel("Playback output", { exact: true })).toHaveValue(
     "simulation",
