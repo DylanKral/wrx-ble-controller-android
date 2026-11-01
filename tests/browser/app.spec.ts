@@ -310,8 +310,8 @@ test("unsupported Bluetooth is reported without claiming success", async ({
     .getByRole("button", { name: "Connect left", exact: true })
     .filter({ visible: true })
     .click();
-  await page.getByText("Connection status", { exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Bluetooth unavailable");
+  await navigate(page, "Custom Testing");
+  await expect(page.getByRole("log")).toContainText("Bluetooth unavailable");
 });
 
 test("Combined playback reports BLE failures without claiming hardware delivery", async ({
@@ -324,7 +324,7 @@ test("Combined playback reports BLE failures without claiming hardware delivery"
   await page.evaluate(() => (window.__ble.fail = true));
   await page.locator('[data-profile-id="overlap-cut"]').click();
   await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", /[0-9]+/);
-  await page.getByText("Connection status", { exact: true }).click();
+  await navigate(page, "Custom Testing");
   await expect(page.getByLabel("Playback delivery", { exact: true })).toContainText("error");
   expect(await page.evaluate(() => window.__ble.writes.length)).toBe(0);
 });

@@ -58,13 +58,6 @@ export function MainPage({ hidden }: { hidden: boolean }) {
           <button type="button" onClick={() => void app.applyColor(app.staticColor)}>Apply color</button>
         </div>
       </section>
-      <section className="panel home-settings" aria-label="Connection diagnostics">
-        <details className="connection-diagnostics">
-          <summary>Connection status</summary>
-          <p aria-label="Playback delivery">{app.output.statusText()}</p>
-          <p role="status">{app.message}</p>
-        </details>
-      </section>
       <p className="safety-line">Parked show use only. Restore red and verify factory lighting before driving.</p>
     </main>
   );

@@ -124,9 +124,9 @@ test("returning to the browser clears the hidden-page status and never resumes h
     document.dispatchEvent(new Event("visibilitychange"));
     window.dispatchEvent(new Event("pageshow"));
   });
-  await page.getByText("Connection status", { exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("App active. Playback remains stopped");
   await page.waitForTimeout(1500);
   expect(await page.evaluate(() => window.__ble.writes.length)).toBe(count);
   await anchored(page);
+  await navigate(page, "Custom Testing");
+  await expect(page.getByRole("log")).toContainText("App active. Playback remains stopped");
 });
