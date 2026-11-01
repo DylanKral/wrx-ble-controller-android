@@ -67,6 +67,8 @@ summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 .sim-sticky-anchor { height: 0; }
 .sim-compact .sim-art svg { height: clamp(150px, 35vw, 220px); }
 .sim-compact.sim-minimized .sim-art svg { height: 90px; }
+.sim-collapse-space { height: 0; }
+.sim-collapse-space.is-reserved { height: calc(clamp(150px, 35vw, 220px) - 90px); }
 #home-view > .sim-compact,
 #controller-view > .sim-compact {
   position: sticky;

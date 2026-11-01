@@ -86,6 +86,28 @@ for (const width of [320, 375, 390, 430, 768])
     await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", "5");
   });
 
+test("preview remains minimized at the collapse boundary without scroll jitter", async ({ page }) => {
+  await page.goto("./");
+  const preview = page.locator(".sim-compact");
+  const boundary = await page.locator(".sim-sticky-anchor").evaluate(el =>
+    el.getBoundingClientRect().top + scrollY + 14 - document.querySelector(".site-nav")!.getBoundingClientRect().bottom);
+  await page.evaluate(y => window.scrollTo(0, Math.ceil(y) + 2), boundary);
+  await expect(preview).toHaveClass(/sim-minimized/);
+  const samples = await preview.evaluate(async el => {
+    const samples: { minimized: boolean; scroll: number; height: number }[] = [];
+    for (let i = 0; i < 60; i++) {
+      await new Promise(requestAnimationFrame);
+      samples.push({ minimized: el.classList.contains("sim-minimized"), scroll: scrollY, height: el.getBoundingClientRect().height });
+    }
+    return samples;
+  });
+  expect(samples.every(sample => sample.minimized)).toBe(true);
+  expect(Math.max(...samples.map(s => s.scroll)) - Math.min(...samples.map(s => s.scroll))).toBeLessThanOrEqual(1);
+  expect(Math.max(...samples.map(s => s.height)) - Math.min(...samples.map(s => s.height))).toBeLessThanOrEqual(1);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(preview).not.toHaveClass(/sim-minimized/);
+});
+
 test("returning to the browser clears the hidden-page status and never resumes hardware playback", async ({ page }) => {
   await mockBluetooth(page, true);
   await page.goto("./");

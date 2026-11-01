@@ -73,6 +73,9 @@ export function SimulatorPanel({ compact = false, sticky = false }: { compact?: 
     if (art.current) applyLedColors(art.current, sample.colors);
   }, [enabled, sample.colors]);
   const artwork = <div className="sim-art" ref={art} dangerouslySetInnerHTML={{ __html: approvedSvg }} />;
+  // Keep content below the preview stationary when its artwork shrinks. Otherwise
+  // browser scroll anchoring can move us back across the collapse threshold.
+  const collapseSpace = <div className={"sim-collapse-space" + (minimized && enabled ? " is-reserved" : "")} aria-hidden="true" />;
   return (
     <>
     {(compact || sticky) && <div ref={anchor} className="sim-sticky-anchor" aria-hidden="true" />}
@@ -83,6 +86,7 @@ export function SimulatorPanel({ compact = false, sticky = false }: { compact?: 
       </div>
       {enabled ? artwork : <p>Hardware output</p>}
     </section>}
+    {sticky && collapseSpace}
     <section className={"panel simulator-panel" + (compact ? " sim-compact" + (minimized ? " sim-minimized" : "") : "")} aria-label={sticky ? "Simulator controls" : "Animation preview"}>
       <div className="sectionhead">
         <h2>{compact ? app.playback?.name ?? "Taillights" : "Animation preview"}</h2>
@@ -260,6 +264,7 @@ export function SimulatorPanel({ compact = false, sticky = false }: { compact?: 
         </>
       )}
     </section>
+    {compact && collapseSpace}
     </>
   );
 }
