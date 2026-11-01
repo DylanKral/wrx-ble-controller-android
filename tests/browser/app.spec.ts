@@ -363,57 +363,6 @@ test("blocked localStorage keeps Bluetooth controls and editable session profile
   );
 });
 
-test("favorite manual timing, early cut, selected slot and named playlist persist", async ({
-  page,
-}) => {
-  await mockBluetooth(page);
-  await page.goto("./#development");
-  await page
-    .getByLabel("Favorite name", { exact: true })
-    .fill("My timed chase");
-  await page
-    .getByLabel("Full duration / cycle (seconds)", { exact: false })
-    .fill("2.65");
-  await page
-    .getByLabel("Sequence transition", { exact: true })
-    .selectOption("cut");
-  await page.getByLabel("Cut at (seconds)", { exact: false }).fill("1.30");
-  await page
-    .getByRole("button", { name: "Save favorite + timing", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "New blank playlist", exact: true })
-    .click();
-  await page.getByLabel("Add a favorite", { exact: true }).selectOption("0");
-  await page.getByRole("button", { name: "Add step", exact: true }).click();
-  await page.getByLabel("Add a favorite", { exact: true }).selectOption("2");
-  await page.getByRole("button", { name: "Add step", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Move playlist step 2 up", exact: true })
-    .click();
-  await page.getByLabel("Playlist name", { exact: true }).fill("My sequence");
-  await page
-    .locator("#dev-playlists")
-    .getByRole("button", { name: "Save", exact: true })
-    .click();
-  await page.reload();
-  await expect(page.getByLabel("Favorite name", { exact: true })).toHaveValue(
-    "My timed chase",
-  );
-  await expect(
-    page.getByLabel("Full duration / cycle (seconds)", { exact: false }),
-  ).toHaveValue("2.65");
-  await expect(
-    page.getByLabel("Cut at (seconds)", { exact: false }),
-  ).toHaveValue("1.30");
-  await expect(page.getByLabel("Playlist name", { exact: true })).toHaveValue(
-    "My sequence",
-  );
-  await expect(
-    page.locator("#dev-playlists .seq-item strong").first(),
-  ).toContainText("Overlap");
-});
-
 test("complete backup downloads raw existing data and restores configuration", async ({
   page,
 }, info) => {

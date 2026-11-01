@@ -307,38 +307,6 @@ test("expanded speed and Studio timing controls fit a 320px screen", async ({
   });
 });
 
-test("Breathe measured favorite timing saves and survives refresh without rounding", async ({
-  page,
-}) => {
-  await mockBluetooth(page);
-  await page.goto("./#development");
-  await page.getByLabel("Factory mode (1–256)", { exact: true }).fill("10");
-  await page
-    .getByRole("button", { name: "Use measured timing", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Save favorite + timing", exact: true })
-    .click();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          JSON.parse(localStorage.getItem("wrx-dream-presets-v5") || "{}")
-            .presets?.[0]?.fullMs,
-      ),
-    )
-    .toBe(3540);
-  await page.reload();
-  const saved = await page.evaluate(() =>
-    JSON.parse(localStorage.getItem("wrx-dream-presets-v5")!),
-  );
-  expect(saved.presets[0]).toMatchObject({
-    mode: 10,
-    kind: "continuous",
-    fullMs: 3540,
-  });
-});
-
 test("active Apply rebases the Custom cut while future edits wait for the next step, then Stop + Red cancels", async ({
   page,
 }) => {

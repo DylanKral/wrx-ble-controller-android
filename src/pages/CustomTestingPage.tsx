@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { ConnectionPanel } from "../components/ConnectionPanel";
 import { ProfileStudio } from "../components/ProfileStudio";
-import { Favorites } from "../components/Favorites";
-import { Playlists } from "../components/Playlists";
 import { useApp } from "../context/AppContext";
 import { SimulatorPanel } from "../components/SimulatorPanel";
 import { NativeSpeedControls } from "../components/NativeSpeedControls";
 export function CustomTestingPage({ hidden }: { hidden: boolean }) {
   const app = useApp(),
-    [repeats, setRepeats] = useState(Infinity),
     [color, setColor] = useState("#0000ff");
   return (
     <main id="controller-view" hidden={hidden}>
@@ -22,9 +19,7 @@ export function CustomTestingPage({ hidden }: { hidden: boolean }) {
         precisely timed transitions. Main-page buttons are assigned here.
       </p>
       <div className="dev-shortcuts">
-        <a href="#dev-presets">Favorites</a>
         <a href="#dev-editor">Profile editor</a>
-        <a href="#dev-playlists">Legacy playlists</a>
       </div>
       <div className="note">
         <strong>For parked testing only.</strong> Playback times are
@@ -42,31 +37,6 @@ export function CustomTestingPage({ hidden }: { hidden: boolean }) {
         </div>
       )}
       <ProfileStudio />
-      <section className="panel">
-        <label className="field">
-          Repeat selected / playlist
-          <select
-            aria-label="Repeat selected / playlist"
-            value={repeats === Infinity ? "forever" : repeats}
-            onChange={(e) =>
-              setRepeats(
-                e.target.value === "forever"
-                  ? Infinity
-                  : Number(e.target.value),
-              )
-            }
-          >
-            <option value="forever">Until stopped</option>
-            {[1, 2, 5, 10, 20, 100].map((n) => (
-              <option key={n} value={n}>
-                {n} time{n === 1 ? "" : "s"}
-              </option>
-            ))}
-          </select>
-        </label>
-      </section>
-      <Favorites repeats={repeats} />
-      <Playlists repeats={repeats} />
       <section className="panel">
         <h2>Static RGB</h2>
         <div className="color-row">

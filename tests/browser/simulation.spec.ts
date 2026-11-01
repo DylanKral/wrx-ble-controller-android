@@ -133,18 +133,15 @@ test("all eight tracks render all 38 LED regions and numbered indicators consist
   expect(errors).toEqual([]);
 });
 
-test("Simulation Only in Custom Testing never sends Bluetooth for favorites, playlists, inspection or Stop", async ({ page }) => {
+test("Simulation Only in Custom Testing never sends Bluetooth for profiles, inspection or Stop", async ({ page }) => {
   await mockBluetooth(page, true);
   await page.goto("./#development");
   await expect(page.locator("#home-view .connection-action .dot.on")).toHaveCount(2);
   await page.getByLabel("Playback output", { exact: true }).selectOption("simulation");
-  await page
-    .getByRole("button", { name: "Play selected once", exact: true })
+  await page.locator("#dev-editor")
+    .getByRole("button", { name: "Play test", exact: true })
     .click();
-  await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", "4");
-  await page
-    .getByRole("button", { name: "Play sequence", exact: true })
-    .click();
+  await expect(page.locator(".sim-readout")).toHaveAttribute("data-mode", /[0-9]+/);
   await page
     .getByText("Preview controls and numbered LEDs", { exact: true })
     .click();
