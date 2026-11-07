@@ -40,7 +40,7 @@ export const initialProfiles: readonly Profile[] = [
   },
   {
     id: "overlap-cut",
-    name: "Overlap · 1.30s cut",
+    name: "Red and Pink",
     repeat: true,
     experimental: false,
     steps: [
@@ -88,34 +88,6 @@ export const initialProfiles: readonly Profile[] = [
       {
         type: "mode",
         mode: 3,
-        ms: 700,
-      },
-    ],
-  },
-  {
-    id: "black-blue-chase",
-    name: "Black / Blue chase test",
-    repeat: true,
-    experimental: true,
-    steps: [
-      {
-        type: "mode",
-        mode: 4,
-        ms: 700,
-      },
-      {
-        type: "color",
-        color: "#000000",
-        ms: 100,
-      },
-      {
-        type: "mode",
-        mode: 4,
-        ms: 100,
-      },
-      {
-        type: "color",
-        color: "#0000ff",
         ms: 700,
       },
     ],

@@ -31,7 +31,7 @@ const originalDefinitions: readonly Profile[] = [
   },
   {
     id: "overlap-cut",
-    name: "Overlap · 1.30s cut",
+    name: "Red and Pink",
     repeat: true,
     experimental: false,
     steps: [
