@@ -31,11 +31,11 @@ const custom = {
   ],
 };
 describe("non-destructive migrations", () => {
-  it("always supplies exactly 11 fixed profiles, separately from user profiles", () => {
+  it("always supplies exactly 10 fixed profiles, separately from user profiles", () => {
     const s = new MemoryStorage();
-    expect(initialProfiles).toHaveLength(11);
+    expect(initialProfiles).toHaveLength(10);
     expect(loadStudio(s).studio.profiles).toEqual([]);
-    expect(fixedProfiles(s)).toHaveLength(11);
+    expect(fixedProfiles(s)).toHaveLength(10);
   });
   it("retires saved Spectrum definitions and buttons while preserving user copies and assignments", () => {
     const storage = new MemoryStorage();

@@ -17,7 +17,7 @@ it("updates unique preset modes atomically without mutating unrelated independen
 
 it.each([
   ["breathe-to-overlap", [10, 7]], ["overlap-cut", [7, 8]],
-  ["chase-rainbow", [4, 3]], ["black-blue-chase", [4]],
+  ["chase-rainbow", [4, 3]],
 ] as const)("selects the factory modes of %s without altering reference durations", (id, modes) => {
   const profile = initialProfiles.find(p => p.id === id)!;
   expect([...new Set(profile.steps.flatMap(s => s.type === "mode" ? [s.mode] : []))]).toEqual(modes);

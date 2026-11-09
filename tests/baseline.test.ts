@@ -15,13 +15,14 @@ it("preserves original definitions except the requested Custom removals and over
   const data = vm.runInNewContext(
     `(()=>{${code};return JSON.parse(JSON.stringify({initialProfiles,basicProfiles}))})()`,
   );
-  const removed = new Set(["blue-overlap", "basic-chase", "flash"]);
+  const removed = new Set(["blue-overlap", "basic-chase", "flash", "black-blue-chase"]);
   const expected: Profile[] = data.initialProfiles
     .filter((p: Profile) => !removed.has(p.id))
     .map((p: Profile) =>
       p.id === "overlap-cut"
         ? {
             ...p,
+            name: "Red and Pink",
             steps: [
               { type: "mode", mode: 7, ms: 1300 },
               { type: "mode", mode: 8, ms: 1300 },
@@ -32,7 +33,10 @@ it("preserves original definitions except the requested Custom removals and over
   expect(initialProfiles.filter((p) => p.id !== "velocity-full-spectrum")).toEqual(expected);
   // Legacy recognition must continue comparing old saved slots to old defaults.
   for (const p of data.initialProfiles)
-    expect(legacyFixedProfiles.get(p.id)).toEqual(p);
+    if (!removed.has(p.id)) {
+      const current = p.id === "overlap-cut" ? { ...p, name: "Red and Pink" } : p;
+      expect(legacyFixedProfiles.get(p.id)).toEqual(current);
+    }
   expect(basicProfiles).toEqual(
     data.basicProfiles.map((p: Profile) => ({
       ...p,

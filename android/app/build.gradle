@@ -1,5 +1,24 @@
 apply plugin: 'com.android.application'
 
+import java.util.Properties
+
+ def signingProperties = new Properties()
+def signingPropertiesFile = rootProject.file('keystore.properties')
+if (signingPropertiesFile.exists()) {
+    signingPropertiesFile.withInputStream { signingProperties.load(it) }
+}
+
+def signingValue = { String propertyName, String environmentName ->
+    def propertyValue = signingProperties.getProperty(propertyName)
+    propertyValue ?: System.getenv(environmentName)
+}
+
+def releaseStoreFile = signingValue('storeFile', 'ANDROID_KEYSTORE_PATH')
+def releaseStorePassword = signingValue('storePassword', 'ANDROID_KEYSTORE_PASSWORD')
+def releaseKeyAlias = signingValue('keyAlias', 'ANDROID_UPLOAD_KEY_ALIAS')
+def releaseKeyPassword = signingValue('keyPassword', 'ANDROID_UPLOAD_KEY_PASSWORD')
+def releaseSigningConfigured = releaseStoreFile && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
 android {
     namespace = "com.dylankral.wrxblecontroller"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,11 +35,34 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (releaseSigningConfigured) {
+                storeFile file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    def releaseTaskRequested = taskGraph.allTasks.any { task ->
+        task.name in ['bundleRelease', 'assembleRelease', 'packageRelease']
+    }
+    if (releaseTaskRequested && !releaseSigningConfigured) {
+        throw new GradleException('Release signing is not configured. Create android/keystore.properties or set ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_UPLOAD_KEY_ALIAS, and ANDROID_UPLOAD_KEY_PASSWORD.')
+    }
+    if (releaseTaskRequested && !file(releaseStoreFile).exists()) {
+        throw new GradleException("Release keystore was not found at the configured path. Check storeFile or ANDROID_KEYSTORE_PATH.")
     }
 }
 

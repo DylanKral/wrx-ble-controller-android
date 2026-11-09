@@ -11,4 +11,8 @@ validation-notes.local.md
 .tools/
 *.jks
 *.keystore
+*.p12
+*.pem
+*.key
 keystore.properties
+android/app/release/

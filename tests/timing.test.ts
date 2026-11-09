@@ -417,7 +417,7 @@ function device(
   }) as unknown as BluetoothDevice;
 }
 describe("dispatch anchoring and independent delivery", () => {
-  for (const id of ["breathe-to-overlap", "black-blue-chase"])
+  for (const id of ["breathe-to-overlap", "overlap-cut"])
     for (const speed of [1, 129, 255])
       it(`${id} at byte ${speed}: preserves ordered commands on both controllers for three cycles`, async () => {
         vi.useFakeTimers();
@@ -441,14 +441,14 @@ describe("dispatch anchoring and independent delivery", () => {
         await run;
         const packets = p.steps.map(s => hex(s.type === "mode" ? modeBytes(s.mode, speed) : colorBytes(s.type === "color" ? s.color : "#000000")));
         for (const side of ["left", "right"]) expect(writes[side]).toEqual([...packets, ...packets, ...packets]);
-        expect(samples).toHaveLength(12);
+        expect(samples).toHaveLength(p.steps.length * 3);
         for (let i = 0; i < samples.length; i++) {
-          const step = p.steps[i % 4], sample = samples[i];
+          const step = p.steps[i % p.steps.length], sample = samples[i];
           expect(sample.mode).toBe(step.type === "mode" ? step.mode : null);
           // This is the existing commanded preview model, not proof of a physical phase reset.
           expect(sample.elapsed).toBe(0);
           if (step.type === "color") expect(sample.color).toBe(step.color);
-          if (i) expect(Math.abs(sample.at - samples[i - 1].at - timings[(i - 1) % 4])).toBeLessThan(1.1);
+          if (i) expect(Math.abs(sample.at - samples[i - 1].at - timings[(i - 1) % p.steps.length])).toBeLessThan(1.1);
         }
         expect(output.state.left.status).toBe("sent");
         expect(output.state.right.status).toBe("sent");
@@ -466,7 +466,17 @@ describe("dispatch anchoring and independent delivery", () => {
       }));
     const output = new PlaybackOutput(ble, sim, "combined");
     const scheduler = new Scheduler((b, valid, options) => output.send(b, valid, options));
-    const run = scheduler.start(initialProfiles.find(p => p.id === "black-blue-chase")!);
+    const chaseColorProfile: Profile = {
+      id: "test-chase-color",
+      name: "Test chase color transition",
+      repeat: true,
+      experimental: true,
+      steps: [
+        { type: "mode", mode: 4, ms: 700 },
+        { type: "color", color: "#0000ff", ms: 700 },
+      ],
+    };
+    const run = scheduler.start(chaseColorProfile);
     await flush();
     const blocked = [ble.writeSide("left", colorBytes("#00ff00")), ble.writeSide("right", colorBytes("#00ff00"))];
     await vi.advanceTimersByTimeAsync(700);
